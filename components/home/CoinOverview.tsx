@@ -1,0 +1,23 @@
+import { fetcher } from "@/lib/coingecko.action";
+import { formatCurrency } from "@/lib/utils";
+import Image from "next/image";
+
+export default async function CoinOverview() {
+  const coin = await fetcher<CoinDetailsData>("/coins/bitcoin", {
+    dex_pair_format: "symbol",
+  });
+
+  return (
+    <div id="coin-overview">
+      <div className="header pt-2">
+        <Image src={coin.image.large} alt="Bitcoin" width={56} height={56} />
+        <div className="info">
+          <p>
+            {coin.name} / {coin.symbol}
+          </p>
+          <h1>{formatCurrency(coin.market_data.current_price.usd)}</h1>
+        </div>
+      </div>
+    </div>
+  );
+}
