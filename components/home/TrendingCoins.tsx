@@ -6,11 +6,17 @@ import Link from "next/link";
 import DataTable from "../DataTable";
 
 export default async function CoinOverview() {
-  const trendingCoins = await fetcher<{ coins: TrendingCoin[] }>(
-    "/search/trending",
-    undefined,
-    300,
-  );
+  let trendingCoins;
+  try {
+    trendingCoins = await fetcher<{ coins: TrendingCoin[] }>(
+      "/search/trending",
+      undefined,
+      300,
+    );
+  } catch (error) {
+    console.error("Error fetching trending coins:", error);
+    return <div>Error loading trending coins.</div>;
+  }
 
   const columns: DataTableColumn<TrendingCoin>[] = [
     {
@@ -63,14 +69,12 @@ export default async function CoinOverview() {
   return (
     <div id="trending-coins">
       <h4>Trending Coins</h4>
-      <div className="trending-coins">
-        <DataTable
-          data={trendingCoins.coins.slice(0, 6) || []}
-          columns={columns}
-          rowKey={(coin) => coin.item.id}
-          tableClassName="trending-coins-table"
-        />
-      </div>
+      <DataTable
+        data={trendingCoins.coins.slice(0, 6) || []}
+        columns={columns}
+        rowKey={(coin) => coin.item.id}
+        tableClassName="trending-coins-table"
+      />
     </div>
   );
 }
